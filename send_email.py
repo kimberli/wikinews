@@ -1,6 +1,7 @@
 #/usr/bin/python
 import datetime
 import json
+import os
 import smtplib
 import ssl
 
@@ -11,7 +12,9 @@ import bs4
 import requests
 
 
-def read_config(config_path = 'email_config.json'):
+DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'email_config.json')
+
+def read_config(config_path = DEFAULT_CONFIG_PATH):
     with open(config_path, 'r') as config_file:
         config = json.load(config_file)
     return config['sender_email'], config['sender_password'], config['recipients']
