@@ -24,13 +24,15 @@ def get_date():
     return yesterday
 
 def fetch_wikipedia_news(date):
-    date_str = date.strftime('%Y_%B_%d')
+    date_str = date.strftime('%Y_%B_%-d')
     print('Fetching news from', date_str)
 
     response = requests.get('https://en.wikipedia.org/wiki/Portal:Current_events/' + date_str)
 
     page = bs4.BeautifulSoup(response.text, 'html.parser')
     content = page.findAll('div', { 'class': 'description' })[0]
+    if not content:
+        print('Error fetching content')
     return content
 
 def send_email(sender_email, sender_password, recipients, date, content):
