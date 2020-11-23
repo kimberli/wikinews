@@ -14,7 +14,7 @@ import requests
 
 DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'email_config.json')
 _INTERNAL_WIKI_LINK = '/wiki'
-_EXTERNAL_WIKI_LINK = 'en.wikipedia.org/wiki'
+_EXTERNAL_WIKI_LINK = 'https://en.wikipedia.org/wiki'
 
 def read_config(config_path = DEFAULT_CONFIG_PATH):
     with open(config_path, 'r') as config_file:
