@@ -13,6 +13,8 @@ import requests
 
 
 DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'email_config.json')
+_INTERNAL_WIKI_LINK = '/wiki'
+_EXTERNAL_WIKI_LINK = 'https://en.wikipedia.org/wiki'
 
 def read_config(config_path = DEFAULT_CONFIG_PATH):
     with open(config_path, 'r') as config_file:
@@ -33,6 +35,12 @@ def fetch_wikipedia_news(date):
     content = page.findAll('div', { 'class': 'description' })[0]
     if not content:
         print('Error fetching content')
+
+    # Replace all internal /wiki links with links that work from email client.
+    for link in content.findAll('a'):
+        if link.has_attr('href') and link['href'].startswith(_INTERNAL_WIKI_LINK):
+            link['href'] = _EXTERNAL_WIKI_LINK + link['href'][len(_INTERNAL_WIKI_LINK):]
+
     return content
 
 def send_email(sender_email, sender_password, recipients, date, content):
