@@ -4,6 +4,7 @@ import json
 import os
 import smtplib
 import ssl
+from typing import List
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -16,10 +17,19 @@ DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'email_config.json
 _INTERNAL_WIKI_LINK = '/wiki'
 _EXTERNAL_WIKI_LINK = 'https://en.wikipedia.org/wiki'
 
-def read_config(config_path = DEFAULT_CONFIG_PATH):
-    with open(config_path, 'r') as config_file:
-        config = json.load(config_file)
-    return config['sender_email'], config['sender_password'], config['recipients']
+
+class Config:
+    def __init__(self, config_filepath: str):
+        with open(config_filepath, 'r') as config_file:
+            config = json.load(config_file)
+        self.server: str = config['sender_server']
+        self.user: str = config['sender_user']
+        self.password: str = config['sender_password']
+        self.email: str = config['sender_email']
+        self.recipients: List[str] = config['recipients']
+
+def read_config(config_path = DEFAULT_CONFIG_PATH) -> Config:
+    return Config(config_path)
 
 def get_date():
     yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
@@ -43,13 +53,13 @@ def fetch_wikipedia_news(date):
 
     return content
 
-def send_email(sender_email, sender_password, recipients, date, content):
+def send_email(config, date, content):
     subject = 'Current events - {}'.format(date.strftime('%B %d, %Y'))
     print('Sending email:', subject)
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
-    msg['From'] = sender_email
-    msg['To'] = ','.join(recipients)
+    msg['From'] = config.email
+    msg['To'] = ','.join(config.recipients)
 
     text = 'TODO'
     html = content
@@ -65,12 +75,12 @@ def send_email(sender_email, sender_password, recipients, date, content):
     # Create a secure SSL context
     context = ssl.create_default_context()
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, recipients, msg.as_string())
+    with smtplib.SMTP_SSL(config.server, port, context=context) as server:
+        server.login(config.user, config.password)
+        server.sendmail(config.email, config.recipients, msg.as_string())
 
 if __name__ == "__main__":
-    sender_email, sender_password, recipients = read_config()
+    config = read_config()
     date = get_date()
     content = fetch_wikipedia_news(date)
-    send_email(sender_email, sender_password, recipients, date, content)
+    send_email(config, date, content)
