@@ -19,7 +19,7 @@ _EXTERNAL_WIKI_LINK = 'https://en.wikipedia.org/wiki'
 
 
 class Config:
-    def __init__(self, config_filepath: str):
+    def __init__(self, config_filepath: str) -> None:
         with open(config_filepath, 'r') as config_file:
             config = json.load(config_file)
         self.server: str = config['sender_server']
@@ -31,7 +31,7 @@ class Config:
 def read_config(config_path = DEFAULT_CONFIG_PATH) -> Config:
     return Config(config_path)
 
-def get_date():
+def get_date() -> datetime.datetime:
     yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
     return yesterday
 
@@ -53,7 +53,7 @@ def fetch_wikipedia_news(date):
 
     return content
 
-def send_email(config, date, content):
+def send_email(config, date, content) -> None:
     subject = 'Current events - {}'.format(date.strftime('%B %d, %Y'))
     print('Sending email:', subject)
     msg = MIMEMultipart('alternative')

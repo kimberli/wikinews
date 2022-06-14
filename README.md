@@ -26,3 +26,7 @@ Run the `send_email.py` script. You'll probably want to e.g. set up a cron job t
 ```
 0 5 * * * python3 /home/kim/wikinews/send_email.py > /home/kim/email.log 2>&1
 ```
+
+## Development
+
+Run `mypy send_email.py` to run type checking.
