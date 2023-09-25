@@ -1,6 +1,7 @@
 #/usr/bin/python
 import datetime
 import json
+import logging
 import os
 import smtplib
 import ssl
@@ -12,6 +13,7 @@ from email.mime.text import MIMEText
 import bs4
 import requests
 
+logging.basicConfig(level=logging.INFO)
 
 DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'email_config.json')
 _INTERNAL_WIKI_LINK = '/wiki'
@@ -37,14 +39,14 @@ def get_date() -> datetime.datetime:
 
 def fetch_wikipedia_news(date):
     date_str = date.strftime('%Y_%B_%-d')
-    print('Fetching news from', date_str)
+    logging.info('Fetching news from %s', date_str)
 
     response = requests.get('https://en.wikipedia.org/wiki/Portal:Current_events/' + date_str)
 
     page = bs4.BeautifulSoup(response.text, 'html.parser')
     content = page.findAll('div', { 'class': 'description' })[0]
     if not content:
-        print('Error fetching content')
+        logging.error('Error fetching content')
 
     # Replace all internal /wiki links with links that work from email client.
     for link in content.findAll('a'):
@@ -55,7 +57,7 @@ def fetch_wikipedia_news(date):
 
 def send_email(config, date, content) -> None:
     subject = 'Current events - {}'.format(date.strftime('%B %d, %Y'))
-    print('Sending email:', subject)
+    logging.info('Sending email: %s', subject)
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = config.email
@@ -83,4 +85,7 @@ if __name__ == "__main__":
     config = read_config()
     date = get_date()
     content = fetch_wikipedia_news(date)
-    send_email(config, date, content)
+    try:
+        send_email(config, date, content)
+    except:
+        logging.exception("Failed to send email")
