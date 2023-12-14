@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO)
 DEFAULT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'email_config.json')
 _INTERNAL_WIKI_LINK = '/wiki'
 _EXTERNAL_WIKI_LINK = 'https://en.wikipedia.org/wiki'
+LINK_COLOR = '#888'
 
 
 class Config:
@@ -48,12 +49,18 @@ def fetch_wikipedia_news(date):
     if not content:
         logging.error('Error fetching content')
 
-    # Replace all internal /wiki links with links that work from email client.
+    # Style all links.
     for link in content.findAll('a'):
+        link['style'] = f'color: {LINK_COLOR}; text-decoration: none;'
+        # Replace all internal /wiki links with links that work from email client.
         if link.has_attr('href') and link['href'].startswith(_INTERNAL_WIKI_LINK):
             link['href'] = _EXTERNAL_WIKI_LINK + link['href'][len(_INTERNAL_WIKI_LINK):]
 
-    return content
+    # Wrap the returned content with some styling.
+    wrapper = page.new_tag('div', **{'style': 'max-width: 700px;'})
+    content.wrap(wrapper)
+
+    return wrapper
 
 def send_email(config, date, content) -> None:
     subject = 'Current events - {}'.format(date.strftime('%B %d, %Y'))
