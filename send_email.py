@@ -9,6 +9,7 @@ from typing import List
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import formataddr
 
 import bs4
 import requests
@@ -67,7 +68,7 @@ def send_email(config, date, content) -> None:
     logging.info('Sending email: %s', subject)
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
-    msg['From'] = config.email
+    msg['From'] = formataddr(("Wikinews", config.email))
     msg['To'] = ','.join(config.recipients)
 
     text = 'TODO'
