@@ -1,1 +1,7 @@
-{"sender_email": "SENDER_EMAIL", "sender_password": "SENDER_PASSWORD", "recipients": ["RECIPENT1", "RECIPIENT2"]}
+{
+  "sender_server": "SERVER.ADDRESS",
+  "sender_email": "SENDER_EMAIL",
+  "sender_user": "SENDER_USER",
+  "sender_password": "SENDER_PASSWORD",
+  "recipients": ["RECIPENT1", "RECIPIENT2"]
+}
