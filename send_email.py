@@ -46,12 +46,12 @@ def fetch_wikipedia_news(date):
     response = requests.get('https://en.wikipedia.org/wiki/Portal:Current_events/' + date_str)
 
     page = bs4.BeautifulSoup(response.text, 'html.parser')
-    content = page.findAll('div', { 'class': 'description' })[0]
+    content = page.find_all('div', { 'class': 'description' })[0]
     if not content:
         logging.error('Error fetching content')
 
     # Style all links.
-    for link in content.findAll('a'):
+    for link in content.find_all('a'):
         link['style'] = f'color: {LINK_COLOR}; text-decoration: none;'
         # Replace all internal /wiki links with links that work from email client.
         if link.has_attr('href') and link['href'].startswith(_INTERNAL_WIKI_LINK):
@@ -75,7 +75,7 @@ def send_email(config, date, content) -> None:
     html = content
 
     part1 = MIMEText(text, "plain")
-    part2 = MIMEText(html, "html")
+    part2 = MIMEText(str(html), "html")
 
     msg.attach(part1)
     msg.attach(part2)
