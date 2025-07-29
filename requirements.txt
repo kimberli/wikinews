@@ -3,7 +3,11 @@ bs4==0.0.2
 certifi==2025.7.14
 charset-normalizer==3.4.2
 idna==3.10
+mypy==1.17.0
+mypy_extensions==1.1.0
+pathspec==0.12.1
 requests==2.32.4
 soupsieve==2.7
+types-requests==2.32.4.20250611
 typing_extensions==4.14.1
 urllib3==2.5.0
