@@ -43,12 +43,19 @@ def fetch_wikipedia_news(date):
     date_str = date.strftime('%Y_%B_%-d')
     logging.info('Fetching news from %s', date_str)
 
-    response = requests.get('https://en.wikipedia.org/wiki/Portal:Current_events/' + date_str)
+    headers = {
+    "User-Agent": "WikinewsBot/1.0 (https://github.com/kimberli/wikinews/; hi@kimberli.me) wikinewsbot/1.0"
+    }
+
+    response = requests.get('https://en.wikipedia.org/wiki/Portal:Current_events/' + date_str, headers=headers)
 
     page = bs4.BeautifulSoup(response.text, 'html.parser')
-    content = page.find_all('div', { 'class': 'description' })[0]
+    divs = page.find_all('div', { 'class': 'description' })
+    if not divs or len(divs) == 0:
+        raise Exception('Error fetching content:', page)
+    content = divs[0]
     if not content:
-        logging.error('Error fetching content')
+        raise Exception('Error fetching content:', page)
 
     # Style all links.
     for link in content.find_all('a'):
